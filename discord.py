@@ -32,5 +32,12 @@ class Discord:
         json  = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", data=data, headers=self.authHeader)
         print(f"Response of sending message: {json.content}")
         
+    def uploadImage(self, imagePath):
+        file = open(imagePath, "rb")
         
-discord = Discord("NjEyNjM4ODE3MzgzMzUwMjcy.GMP9-V.Dy0RKiBhQkHFGN1OIzkJhjuOXjOiTTXkbH52c0", "1112806138451349668").readMessages()
+        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, headers=self.authHeader)
+        
+        print(f"Response of uploading image: {json.content}")
+        
+        
+discord = Discord("NjEyNjM4ODE3MzgzMzUwMjcy.GMP9-V.Dy0RKiBhQkHFGN1OIzkJhjuOXjOiTTXkbH52c0", "1112806138451349668").uploadImage("E:\Downloads\pickaxe.png")
