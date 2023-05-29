@@ -39,5 +39,4 @@ class Discord:
         
         print(f"Response of uploading image: {json.content}")
         
-        
-discord = Discord("NjEyNjM4ODE3MzgzMzUwMjcy.GMP9-V.Dy0RKiBhQkHFGN1OIzkJhjuOXjOiTTXkbH52c0", "1112806138451349668").uploadImage("E:\Downloads\pickaxe.png")
+    
