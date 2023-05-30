@@ -1,10 +1,6 @@
 import requests
 from datetime import datetime
 
-data = {
-    "content" : "hello again"
-}
-#res = requests.post("https://discord.com/api/v9/channels/1112721985697480765/messages", headers=headers, json=data)
 
 class Discord:
     def __init__(self, authToken, channelID):
@@ -12,7 +8,7 @@ class Discord:
         self.authHeader = {"Authorization" : authToken}
         
     def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=100", headers=self.authHeader).json()
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=15", headers=self.authHeader).json()
         
         messages = []
         
@@ -26,6 +22,7 @@ class Discord:
 
         messages.reverse()
         print(f"Response of retrieving message: {messages}")
+        return messages
 
     def sendMessage(self, text):
         data = {"content" : text}

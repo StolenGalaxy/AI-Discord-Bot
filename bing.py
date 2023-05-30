@@ -12,20 +12,19 @@ def askBing(query, type):
                 if file.endswith(".jpeg"):
                     fileName = f"{uuid4()}.jpeg"
                     
-                    os.rename(file, fileName)
+                    os.rename(file, fileName) 
                     shutil.move(fileName, "GeneratedImages")
                     
                     generatedImages.append(f"GeneratedImages\{fileName}")
             return generatedImages
                     
         elif type == "text":
-            response = Query(query)
+            response = Query(query, "creative")
             return response
         
         elif type == "code":
-            response = Query(query)
-            return response.code
+            response = Query(query, "creative").code
+            return response
+        
     except Exception as error:
-        print()
-    
-print(askBing("Edinburgh", "image"))
+        print(error)
