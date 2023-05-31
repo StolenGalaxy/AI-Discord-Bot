@@ -8,7 +8,7 @@ class Discord:
         self.authHeader = {"Authorization" : authToken}
         
     def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=15", headers=self.authHeader).json()
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=10", headers=self.authHeader).json()
         
         messages = []
         
@@ -29,7 +29,7 @@ class Discord:
         json  = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", data=data, headers=self.authHeader)
         print(f"Response of sending message: {json.content}")
         
-    def uploadImage(self, imagePath):
+    def uploadAndGenerateImage(self, imagePath):
         file = open(imagePath, "rb")
         
         json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, headers=self.authHeader)
