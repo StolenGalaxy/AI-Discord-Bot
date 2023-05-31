@@ -8,7 +8,7 @@ class Discord:
         self.authHeader = {"Authorization" : authToken}
         
     def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=10", headers=self.authHeader).json()
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=100", headers=self.authHeader).json()
         
         messages = []
         

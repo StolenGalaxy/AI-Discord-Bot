@@ -19,5 +19,10 @@ def convert(command: str, discordSession):
         if "GENIMAGE" in command:
             print("Generating and sending image.")
             content = (command.split("GENIMAGE")[1])
-            images = askBing(content, "image")
-            discordSession.uploadAndGenerateImage(images[0])
+            try:
+                images = askBing(content, "image")
+                discordSession.uploadAndGenerateImage(images[0])
+            except:
+                discordSession.sendMessgage("Sorry, I can't seem to create that image right now.")
+            
+                
