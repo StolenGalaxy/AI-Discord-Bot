@@ -1,1 +1,1 @@
-# DiscordFactChecker
+# DiscordBot
