@@ -1,6 +1,6 @@
 import requests
 from datetime import datetime
-
+from random import choice
 
 class Discord:
     def __init__(self, authToken, channelID):
@@ -8,9 +8,11 @@ class Discord:
         self.authHeader = {"Authorization" : authToken}
         
     def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=100", headers=self.authHeader).json()
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=50", headers=self.authHeader).json()
         
         messages = []
+        i = 0
+        recentAuthor = ""
         
         for message in json:
             if(not message["content"]):
@@ -19,21 +21,38 @@ class Discord:
             
             item = message["author"]["username"] + " : '" + message["content"] + "' : " + time
             messages.append(item)
+            
+            #So the author of the most recent message can be stored
+            if not i:
+                recentAuthor = message["author"]["username"]
+                i+=1
 
         messages.reverse()
-        print(f"Response of retrieving message: {messages}")
-        return messages
+        #print(f"Response of retrieving message: {messages}")
+        print("Retrieved recent messages successfully.")
+        
+        toReturn = [messages, recentAuthor]
+        return toReturn
 
     def sendMessage(self, text):
         data = {"content" : text}
         json  = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", data=data, headers=self.authHeader)
         print(f"Response of sending message: {json.content}")
-        
-    def uploadAndGenerateImage(self, imagePath):
+    
+    def uploadImage(self, imagePath, message):
         file = open(imagePath, "rb")
+        data = {"content" : message}
         
-        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, headers=self.authHeader)
+        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, data = data, headers=self.authHeader)
         
         print(f"Response of uploading image: {json.content}")
         
-    
+    def findGif(self, search):
+        #Search for gif
+        json = requests.get(f"https://discord.com/api/v9/gifs/search?q={search}&media_format=mp4&provider=tenor").json()
+        
+        gifs = []
+        for gif in json:
+            gifs.append(gif["url"])
+            
+        return choice(gifs)
