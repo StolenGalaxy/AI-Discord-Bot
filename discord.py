@@ -1,13 +1,20 @@
 import requests
 from datetime import datetime
 from random import choice, randint
-
+import string
 
 class Discord:
     def __init__(self, authToken, channelID):
         self.channelID = channelID
         self.authHeader = {"Authorization" : authToken}
         
+        
+    def generateKey(self):
+        key = ""
+        for i in range(5):
+            key = key + choice(string.ascii_letters)
+        return key
+            
     def readMessages(self, limit):
         json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit={limit}", headers=self.authHeader).json()
         
@@ -15,14 +22,14 @@ class Discord:
         i = 0
         recentAuthor = ""
         
-        secretKey = str(randint(0, 9999))
+        secretKey = self.generateKey()
         
         for message in json:
             if(not message["content"]):
                 continue
             time = (datetime.fromisoformat(message["timestamp"])).strftime("%d %m %Y %X")
             
-            item = message["author"]["username"] + " : " + message["author"]["id"] + message["content"] + " : " + message["id"] + " : " + time
+            item = message["author"]["username"] + " : " + message["author"]["id"] + " : " + secretKey + message["content"] + secretKey + " : " + message["id"] + " : " + time
             messages.append(item)
             
             #So the author of the most recent message can be stored
@@ -49,6 +56,14 @@ class Discord:
         
         print(f"Response of uploading image: {json.content}")
         
+    def replyMessage(self, messageID, text):
+        data = {"content": text, "message_reference" : {
+            "message_id": messageID
+        }}
+        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", json=data, headers=self.authHeader)
+        print(f"Response of replying to message: {json.content}")
+    
+    
     def findGif(self, search):
         #Search for gif
         json = requests.get(f"https://discord.com/api/v9/gifs/search?q={search}&media_format=mp4&provider=tenor").json()

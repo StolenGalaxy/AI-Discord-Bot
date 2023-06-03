@@ -32,14 +32,26 @@ def convert(command: str, discordSession):
             content = command.split("REACT")[1]
             
             messageID = content.split("@;")[1].strip()
-            print(messageID)
+
             URLEmoji = content.split("@;")[2].strip()
-            print(URLEmoji)
+
             message = content.split("@;")[3]
-            print(message)
+
             
             discordSession.reactToMessage(messageID, URLEmoji)
+            sleep(3)
             discordSession.sendMessage(message)
+            
+        elif "REPLYTEXT" in command:
+            print("Replying to message.")
+            content = command.split("REPLYTEXT")[1]
+            
+            replyMessageID = content.split("@;")[1].strip()
+            
+            message = content.split("@;")[2].strip()
+            
+            discordSession.replyMessage(replyMessageID, message)
+            
 
 
         elif "GENIMAGE" in command:
