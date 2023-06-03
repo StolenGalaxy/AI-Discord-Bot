@@ -8,8 +8,8 @@ class Discord:
         self.channelID = channelID
         self.authHeader = {"Authorization" : authToken}
         
-    def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=30", headers=self.authHeader).json()
+    def readMessages(self, limit):
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit={limit}", headers=self.authHeader).json()
         
         messages = []
         i = 0
@@ -22,7 +22,7 @@ class Discord:
                 continue
             time = (datetime.fromisoformat(message["timestamp"])).strftime("%d %m %Y %X")
             
-            item = message["author"]["username"] + " : " + message["author"]["id"] + message["content"] + " : " + time
+            item = message["author"]["username"] + " : " + message["author"]["id"] + message["content"] + " : " + message["id"] + " : " + time
             messages.append(item)
             
             #So the author of the most recent message can be stored
@@ -59,5 +59,16 @@ class Discord:
             
         return choice(gifs)
 
+    def reactToMessage(self, messageID, emojiURLEncode):
+        requests.put(f"https://discord.com/api/v9/channels/{self.channelID}/messages/{messageID}/reactions/{emojiURLEncode}/@me", headers=self.authHeader)
+        
     def showTyping(self):
         requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/typing", headers=self.authHeader)
+        
+    def getOwnInfo(self):
+        json = requests.get("https://discord.com/api/v9/users/@me", headers=self.authHeader).json()
+        return json
+    
+    def getChatInfo(self):
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}", headers=self.authHeader).json()
+        return json

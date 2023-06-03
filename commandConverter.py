@@ -1,4 +1,5 @@
 from bing import askBing
+from time import sleep
 
 oddNumbers = [1, 3, 5, 7, 9]
 
@@ -13,23 +14,37 @@ def convert(command: str, discordSession):
     for command in commands:
         if "SENDTEXT" in command:
             print("Sending text.")
-            content = (command.split("SENDTEXT")[1])
+            content = command.split("SENDTEXT")[1]
             discordSession.sendMessage(content)
 
         elif "SENDGIFMESSAGE" in command:
             print("Finding and sending gif.")
-            content = (command.split("SENDGIFMESSAGE")[1])
+            content = command.split("SENDGIFMESSAGE")[1]
             gifSearch = content.split("@")[1]
             message = content.split("@")[2]
             
             gifURL = discordSession.findGif(gifSearch)
             discordSession.sendMessage(message)
             discordSession.sendMessage(gifURL)
+            
+        elif "REACT" in command:
+            print("Reacting to message.")
+            content = command.split("REACT")[1]
+            
+            messageID = content.split("@;")[1].strip()
+            print(messageID)
+            URLEmoji = content.split("@;")[2].strip()
+            print(URLEmoji)
+            message = content.split("@;")[3]
+            print(message)
+            
+            discordSession.reactToMessage(messageID, URLEmoji)
+            discordSession.sendMessage(message)
 
 
         elif "GENIMAGE" in command:
             print("Generating and sending image.")
-            content = (command.split("GENIMAGE")[1])
+            content = command.split("GENIMAGE")[1]
             imagePrompt = content.split("@")[1]
             message = content.split("@")[2]
 
