@@ -1,6 +1,7 @@
 import requests
 from datetime import datetime
-from random import choice
+from random import choice, randint
+
 
 class Discord:
     def __init__(self, authToken, channelID):
@@ -8,18 +9,20 @@ class Discord:
         self.authHeader = {"Authorization" : authToken}
         
     def readMessages(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=50", headers=self.authHeader).json()
+        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit=30", headers=self.authHeader).json()
         
         messages = []
         i = 0
         recentAuthor = ""
+        
+        secretKey = str(randint(0, 9999))
         
         for message in json:
             if(not message["content"]):
                 continue
             time = (datetime.fromisoformat(message["timestamp"])).strftime("%d %m %Y %X")
             
-            item = message["author"]["username"] + " : '" + message["content"] + "' : " + time
+            item = message["author"]["username"] + " : " + message["author"]["id"] + message["content"] + " : " + time
             messages.append(item)
             
             #So the author of the most recent message can be stored
@@ -30,9 +33,8 @@ class Discord:
         messages.reverse()
         #print(f"Response of retrieving message: {messages}")
         print("Retrieved recent messages successfully.")
-        
-        toReturn = [messages, recentAuthor]
-        return toReturn
+
+        return[messages, recentAuthor, secretKey]
 
     def sendMessage(self, text):
         data = {"content" : text}
@@ -56,3 +58,6 @@ class Discord:
             gifs.append(gif["url"])
             
         return choice(gifs)
+
+    def showTyping(self):
+        requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/typing", headers=self.authHeader)

@@ -16,7 +16,18 @@ def convert(command: str, discordSession):
             content = (command.split("SENDTEXT")[1])
             discordSession.sendMessage(content)
 
-        if "GENIMAGE" in command:
+        elif "SENDGIFMESSAGE" in command:
+            print("Finding and sending gif.")
+            content = (command.split("SENDGIFMESSAGE")[1])
+            gifSearch = content.split("@")[1]
+            message = content.split("@")[2]
+            
+            gifURL = discordSession.findGif(gifSearch)
+            discordSession.sendMessage(message)
+            discordSession.sendMessage(gifURL)
+
+
+        elif "GENIMAGE" in command:
             print("Generating and sending image.")
             content = (command.split("GENIMAGE")[1])
             imagePrompt = content.split("@")[1]
@@ -28,15 +39,7 @@ def convert(command: str, discordSession):
             else:
                 discordSession.uploadImage(images[0], message)
         
-        if "SENDGIFMESSAGE" in command:
-            print("Finding and sending gif.")
-            content = (command.split("SENDGIFMESSAGE")[1])
-            gifSearch = content.split("@")[1]
-            message = content.split("@")[2]
-            
-            gifURL = discordSession.findGif(gifSearch)
-            discordSession.sendMessage(message)
-            discordSession.sendMessage(gifURL)
+        
             
             
             
