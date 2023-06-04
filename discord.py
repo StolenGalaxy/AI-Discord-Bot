@@ -7,13 +7,6 @@ class Discord:
     def __init__(self, authToken, channelID):
         self.channelID = channelID
         self.authHeader = {"Authorization" : authToken}
-        
-        
-    def generateKey(self):
-        key = ""
-        for i in range(5):
-            key = key + choice(string.ascii_letters)
-        return key
             
     def readMessages(self, limit):
         json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit={limit}", headers=self.authHeader).json()
@@ -22,7 +15,6 @@ class Discord:
         i = 0
         recentAuthor = ""
         
-        secretKey = self.generateKey()
         
         for message in json:
             if(not message["content"]):
@@ -41,7 +33,7 @@ class Discord:
         #print(f"Response of retrieving message: {messages}")
         print("Retrieved recent messages successfully.")
 
-        return[messages, recentAuthor, secretKey]
+        return[messages, recentAuthor]
 
     def sendMessage(self, text):
         data = {"content" : text}
