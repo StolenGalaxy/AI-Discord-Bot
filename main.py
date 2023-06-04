@@ -4,7 +4,11 @@ from commandConverter import convert
 from time import sleep
 import asyncio
 
-discordSession = Discord()
+authToken = ""
+channelID = ""
+
+
+discordSession = Discord(authToken, channelID)
 
 oldMessages = ""
 recentAuthor = ""
