@@ -11,4 +11,5 @@ You must have python installed, recommended atleast python 3.8
 6. Save the file, then run main.py
 
 Short video on how to get your discord authentication token: https://www.youtube.com/watch?v=YEgFvgg7ZPI
+
 Short video on how to get a channel's ID: https://www.youtube.com/watch?v=NLWtSHWKbAI
