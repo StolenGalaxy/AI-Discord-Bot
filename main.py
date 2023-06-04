@@ -4,7 +4,7 @@ from commandConverter import convert
 from time import sleep
 import asyncio
 
-discordSession = Discord("ODAxMTQyOTY1MDgyNjUyNzIz.GKBxOB.QqrGN445D7TjzWSWvCQap8n1y0NXXVlqQrYRQc", "1046435017120829510")
+discordSession = Discord()
 
 oldMessages = ""
 recentAuthor = ""
