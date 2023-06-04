@@ -29,7 +29,7 @@ class Discord:
                 continue
             time = (datetime.fromisoformat(message["timestamp"])).strftime("%d %m %Y %X")
             
-            item = message["author"]["username"] + " : " + message["author"]["id"] + " : " + secretKey + message["content"] + secretKey + " : " + message["id"] + " : " + time
+            item = message["author"]["username"] + " : " + message["author"]["id"] + " : " + message["content"] + " : " + message["id"] + " : " + time
             messages.append(item)
             
             #So the author of the most recent message can be stored
