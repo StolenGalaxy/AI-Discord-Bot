@@ -6,10 +6,11 @@ import string
 class Discord:
     def __init__(self, authToken, channelID):
         self.channelID = channelID
-        self.authHeader = {"Authorization" : authToken}
+        self.session = requests.Session()
+        self.session.headers = {"Authorization" : authToken}
             
     def readMessages(self, limit):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit={limit}", headers=self.authHeader).json()
+        json = session.get(f"https://discord.com/api/v9/channels/{self.channelID}/messages?limit={limit}").json()
         
         messages = []
         i = 0
@@ -37,14 +38,14 @@ class Discord:
 
     def sendMessage(self, text):
         data = {"content" : text}
-        json  = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", data=data, headers=self.authHeader)
+        json  = session.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", data=data)
         print(f"Response of sending message: {json.content}")
     
     def uploadImage(self, imagePath, message):
         file = open(imagePath, "rb")
         data = {"content" : message}
         
-        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, data = data, headers=self.authHeader)
+        json = session.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", files={"file" : file}, data = data)
         
         print(f"Response of uploading image: {json.content}")
         
@@ -52,13 +53,13 @@ class Discord:
         data = {"content": text, "message_reference" : {
             "message_id": messageID
         }}
-        json = requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", json=data, headers=self.authHeader)
+        json = session.post(f"https://discord.com/api/v9/channels/{self.channelID}/messages", json=data)
         print(f"Response of replying to message: {json.content}")
     
     
     def findGif(self, search):
         #Search for gif
-        json = requests.get(f"https://discord.com/api/v9/gifs/search?q={search}&media_format=mp4&provider=tenor").json()
+        json = session.get(f"https://discord.com/api/v9/gifs/search?q={search}&media_format=mp4&provider=tenor").json()
         
         gifs = []
         for gif in json:
@@ -67,15 +68,15 @@ class Discord:
         return choice(gifs)
 
     def reactToMessage(self, messageID, emojiURLEncode):
-        requests.put(f"https://discord.com/api/v9/channels/{self.channelID}/messages/{messageID}/reactions/{emojiURLEncode}/@me", headers=self.authHeader)
+        session.put(f"https://discord.com/api/v9/channels/{self.channelID}/messages/{messageID}/reactions/{emojiURLEncode}/@me")
         
     def showTyping(self):
-        requests.post(f"https://discord.com/api/v9/channels/{self.channelID}/typing", headers=self.authHeader)
+        session.post(f"https://discord.com/api/v9/channels/{self.channelID}/typing")
         
     def getOwnInfo(self):
-        json = requests.get("https://discord.com/api/v9/users/@me", headers=self.authHeader).json()
+        json = session.get("https://discord.com/api/v9/users/@me").json()
         return json
     
     def getChatInfo(self):
-        json = requests.get(f"https://discord.com/api/v9/channels/{self.channelID}", headers=self.authHeader).json()
+        json = session.get(f"https://discord.com/api/v9/channels/{self.channelID}").json()
         return json
