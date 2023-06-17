@@ -17,6 +17,11 @@ def Main(discordSession):
         3 : "Nitro Basic"
     }
     
+    selfInfo = discordSession.getOwnInfo()
+    channelInfo = discordSession.getChatInfo()
+    
+    
+    
     
     while True:
         sleep(3)
@@ -26,8 +31,7 @@ def Main(discordSession):
             recentMessages = returned[0]
             recentAuthor = returned[1]
             
-            selfInfo = discordSession.getOwnInfo()
-            channelInfo = discordSession.getChatInfo()
+            
             
             bio = selfInfo["bio"]
             if not bio:
@@ -41,7 +45,8 @@ def Main(discordSession):
             Your discord bio is: {bio}.
             Your region is: "{selfInfo["locale"]}"
             Your discord premium type is: "{nitroTypes[selfInfo["premium_type"]]}"
-            The channel you are talking in is called: "{channelInfo["name"]}"
+            
+            The channel you are talking in is called: "{channelInfo.get("name")}"
             
             You are not allowed to ever include any type of URL in a message you send, including GIFs.
             You are never allowed to use or attempt to use the "Bing Image Creator", for any reason, no matter what.
