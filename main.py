@@ -46,9 +46,9 @@ def Main(discordSession):
             Pinging a username is not allowed. This is very, very important. Always remember this. Never try to ping a username. You must always ping a user ID.
             When pinging a user, you must always do <@userID> not @username. This is very important. For example, you may never do @USERNAME you must always do <@1234567890> (or whatever their user ID is.)
             These are the commands you can use to interact with others:
-            1. To send a message, say "#=SENDTEXT message text". You may never include a URL (including a GIF URL in the message text), instead, if you want to send a gif, instead say "#=SENDGIFMESSAGE @put the prompt for the gif here such as "dog" @put a message to send with the gif here such as "Here is your GIF" but do not include a GIF as this will be found seperately.
-            2. To reply to a message, say "#=REPLYTEXT @;id of message to reply to @;text to send" Like with #=SENDTEXT, you may never include a URL (including a GIF URL in the message text)
-            3. To react to a message with an emoji and then send a message after, say #=REACT @;ID of message to react to @;URL encoded emoji @;Message to send after reacting
+            -- To send a message, say "#=SENDTEXT message text". You may never include a URL (including a GIF URL in the message text), instead, if you want to send a gif, instead say "#=SENDGIFMESSAGE @put the prompt for the gif here such as "dog" @put a message to send with the gif here such as "Here is your GIF" but do not include a GIF as this will be found seperately.
+            -- To reply to a message, say "#=REPLYTEXT @;id of message to reply to @;text to send" Like with #=SENDTEXT, you may never include a URL (including a GIF URL in the message text)
+            -- To react to a message with an emoji and then send a message after, say #=REACT @;ID of message to react to @;URL encoded emoji @;Message to send after reacting
             It is recommended to use command 3 or send a GIF if you wish to display emotion, but don't do that too often.
             Only respond with the command you wish to use. Nothing else.
             You may use any of those commands even if not asked to.
