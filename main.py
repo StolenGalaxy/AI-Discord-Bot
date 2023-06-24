@@ -4,25 +4,20 @@ from time import sleep
 import asyncio
 
 
-
-
 def Main(discordSession):
     oldMessages = ""
     recentAuthor = ""
 
     nitroTypes = {
-        0 : "None",
-        1 : "Nitro Classic",
-        2 : "Nitro",
-        3 : "Nitro Basic"
+        0: "None",
+        1: "Nitro Classic",
+        2: "Nitro",
+        3: "Nitro Basic"
     }
-    
+
     selfInfo = discordSession.getOwnInfo()
     channelInfo = discordSession.getChatInfo()
-    
-    
-    
-    
+
     while True:
         sleep(3)
         returned = discordSession.readMessages(30)
