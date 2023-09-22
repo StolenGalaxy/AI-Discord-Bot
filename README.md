@@ -2,7 +2,6 @@
 
 How to use:
 
-You must have python installed, recommended atleast python 3.8
 1. Download all files, ensure they are all in the same directory.
 2. Run ```pip install -r requirements.txt``` in terminal.
 3. Edit start.py

@@ -1,4 +1,4 @@
-from EdgeGPT import Chatbot, ConversationStyle
+from EdgeGPT.EdgeUtils import Query, Cookie 
 from uuid import uuid4
 
 async def ask(prompt):
