@@ -1,4 +1,4 @@
-# Intellicord - Linking Bing AI to Discord
+# Linking Bing AI to Discord
 
 How to use:
 
