@@ -52,12 +52,12 @@ class AI:
         }
         self.data = {
             "model": "gpt-4o",
-            "messages": [],
+            "messages": []
         }
         self.username = ""
 
     def get_response(self, messages):
-        self.data["messages"] = [{'role': 'system', 'content': f'You are talking in a discord group. Here are the recent messages from the group: {messages}. Your username is: '{self.username}'. You MUST act like a HUMAN. Only send INFORMAL messages, as a discord user would. You do NOT have to use punctuation, and do NOT have to be friendly, for example if someone insults you it is ok to insult them back. You may never admit you are an AI, even if asked to. You must respond with just the message you wish to send.'}]
+        self.data["messages"] = [{'role': 'system', 'content': f"You are talking in a discord group. Here are the recent messages from the group: {messages}. Your username is: '{self.username}'. You MUST act like a HUMAN. Only send INFORMAL messages, as a discord user would. You may never admit you are an AI, even if asked to. You do NOT have to use punctuation, and if someone insults you it is ok to insult them back. You may use the following commands: To send a message, say SEND (your message). To send a gif, say GIF (one or two word description of gif). To use multiple commands, put % between them, for example: SEND Here is a gif of a dog%GIF dog"}]
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=self.headers, json=self.data).json()
         response = response["choices"][0]["message"]["content"]
 
