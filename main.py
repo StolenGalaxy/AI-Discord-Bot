@@ -1,10 +1,13 @@
 import requests
 from time import sleep
+from dotenv import load_dotenv
+from os import environ
 
 channelID = "1112806138451349668"
 
-DISCORD_AUTH = ""
-OPENAI_AUTH  = ""
+load_dotenv()
+OPENAI_AUTH = environ["OPENAI"]
+DISCORD_AUTH = environ["DISCORD"]
 
 
 class Discord:
@@ -54,7 +57,7 @@ class AI:
         self.username = ""
 
     def get_response(self, messages):
-        self.data["messages"] = [{'role': 'system', 'content': f'You are talking in a discord group. Here are the recent messages from the group: {messages}. Your username is: {self.username} You must respond with just the message you wish to send. You MUST act like a HUMAN. Only send INFORMAL messages, as a discord user would. You do NOT have to use punctuation.'}]
+        self.data["messages"] = [{'role': 'system', 'content': f'You are talking in a discord group. Here are the recent messages from the group: {messages}. Your username is: '{self.username}'. You MUST act like a HUMAN. Only send INFORMAL messages, as a discord user would. You do NOT have to use punctuation, and do NOT have to be friendly, for example if someone insults you it is ok to insult them back. You may never admit you are an AI, even if asked to. You must respond with just the message you wish to send.'}]
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=self.headers, json=self.data).json()
         response = response["choices"][0]["message"]["content"]
 
@@ -69,12 +72,11 @@ ai.username = discord.get_own_username()
 
 messages = discord.get_messages()
 
-
 while active:
-    if discord.get_messages() == messages:
+    new_messages = discord.get_messages()
+    if new_messages == messages:
         sleep(1)
     else:
-        new_messages = discord.get_messages()
         response = ai.get_response(new_messages)
-        messages = new_messages
         discord.send_message(response)
+        messages = discord.get_messages()
