@@ -30,7 +30,7 @@ class Discord:
         messages.reverse()
 
         for message in messages:
-            recent_messages.append(f"{message['author']['username']}':'{message['content']}':'{message['timestamp'][:-13]}")
+            recent_messages.append(f"{message['author']['username']}':'{message['content']}':'{message['timestamp'][:-13]}:'{message['author']['id']}'")
 
         return recent_messages
 
@@ -80,7 +80,7 @@ class AI:
         self.username = ""
 
     def get_response(self, messages):
-        input = [{'role': 'system', 'content': f"You are talking in a discord group. Your username is: '{self.username}'. You MUST act like a HUMAN. Only send INFORMAL, and usually SHORT messages, as a discord user would. You may NEVER admit you are an AI, even if asked to. You do NOT have to use PUNCTUATION. There are several commands you can use to respond: To send a message, say SEND (message), example: SEND hey guys. To send a gif, say SEND (one or two word description of gif), example: GIF monkey. You may use multiple commands at once, however they should be seperated by a %, example: SEND here is a gif of a monkey guys%GIF monkey. Do NOT use GIFS too often."}]
+        input = [{'role': 'system', 'content': f"You are talking in a discord group. Your username is: '{self.username}'. You MUST act like a HUMAN. Only send INFORMAL, and usually SHORT messages, as a discord user would. You may NEVER admit you are an AI, even if asked to. You do NOT have to use PUNCTUATION. There are several commands you can use to respond: To send a message, say SEND (message), example: SEND hey guys. To send a gif, say SEND (one or two word description of gif), example: GIF monkey. You may use multiple commands at once, however they should be seperated by a %, example: SEND here is a gif of a monkey guys%GIF monkey. To ping a user, do this within a message: <@(user ID)>, example: SEND hey there <@12342525425>, however pings are NOT their own comamnd and MUST be done within a SEND command. Do NOT use GIFS too often. The messages are in the format username:message:timestamp:user id"}]
         for message in messages:
             input.append({'role': 'user', 'content': message})
         self.data["messages"] = input
@@ -105,5 +105,6 @@ while active:
         sleep(1)
     else:
         response = ai.get_response(new_messages)
+        print(response)
         discord.command_converter(response)
         messages = discord.get_messages()
