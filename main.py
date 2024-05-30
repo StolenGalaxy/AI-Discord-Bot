@@ -39,7 +39,7 @@ class Discord:
         json = {
             "content": text
         }
-
+        requests.post(f"https://discord.com/api/v9/channels/{channelID}/typing", headers=self.headers)
         requests.post(f"https://discord.com/api/v9/channels/{channelID}/messages", headers=self.headers, json=json)
 
     def get_own_username(self):
