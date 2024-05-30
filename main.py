@@ -5,7 +5,7 @@ from os import environ
 
 from random import choice
 
-channelID = "1122185026809901108"
+channelID = "CHANNEL ID HERE"
 
 load_dotenv()
 OPENAI_AUTH = environ["OPENAI"]
@@ -66,7 +66,6 @@ class Discord:
             commands = response.split("T/I/o/C/J/1/h/x/Q/c")
         else:
             commands = [response]
-
 
         for command in commands:
             if command[:4] == "SEND":
