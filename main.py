@@ -61,7 +61,7 @@ class Discord:
     def command_converter(self, response: str):
         if "SEND" not in response and "GIF" not in response and "REACT" not in response:
             print("Response is incorrectly formatted.")
-
+            return
         elif "T/I/o/C/J/1/h/x/Q/c" in response:
             commands = response.split("T/I/o/C/J/1/h/x/Q/c")
         else:
