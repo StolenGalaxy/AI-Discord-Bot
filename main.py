@@ -5,7 +5,7 @@ from os import environ
 
 from random import choice
 
-channelID = "CHANNEL ID HERE"
+channelID = "1244300930417950721"
 
 load_dotenv()
 OPENAI_AUTH = environ["OPENAI"]
@@ -127,7 +127,7 @@ class AI:
                   You do NOT have to use PUNCTUATION. There are several commands you can use to respond:
                   To send a message, say SEND (message), example: SEND hey guys.
                   To reply to a specific message, say REPLY (reference message id)&&(message), example: REPLY 132434532452433&&yeah I agree!
-                  You should reply to specific messages very often, but not when talking to multiple people at once.
+                  ALWAYS use the REPLY command when responding to a specific message or referencing a previous message.
                   To send a gif, say SEND (one or two word description of gif), example: GIF monkey
                   You may use multiple commands at once, however they should be seperated by 'T/I/o/C/J/1/h/x/Q/c' and there MUST NOT be a SPACE around the T/I/o/C/J/1/h/x/Q/c, example: SEND here is a gif of a monkey guysT/I/o/C/J/1/h/x/Q/cGIF monkey.
                   To ping a user, do this within a message: <@(user ID)>, example: SEND hey there <@12342525425>, however pings are NOT their own comamnd and MUST be done within a SEND command.
