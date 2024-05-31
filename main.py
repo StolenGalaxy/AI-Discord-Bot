@@ -3,7 +3,7 @@ from time import sleep
 from dotenv import load_dotenv
 from os import environ
 
-from random import choice
+from random import choice, randint
 
 channelID = "1244300930417950721"
 
@@ -159,7 +159,7 @@ response_retry_limit = 3
 while active:
     new_messages = discord.get_messages()
     if new_messages == messages:
-        sleep(1)
+        sleep(randint(1, 4))
     else:
         response = ai.get_response(new_messages)
         print(response)
@@ -168,7 +168,7 @@ while active:
 
         while not success and retries < response_retry_limit:
             print("Response failed. Retrying.")
-            sleep(1)
+            sleep(0.5)
             response = ai.get_response(new_messages)
             print(response)
             success = discord.command_converter(response)
