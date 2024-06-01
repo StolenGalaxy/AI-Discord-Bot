@@ -5,7 +5,7 @@ from os import environ
 
 from random import choice, randint
 
-channelID = "1244300930417950721"
+channelID = "CHANNEL ID HERE"
 
 load_dotenv()
 OPENAI_AUTH = environ["OPENAI"]
@@ -30,6 +30,7 @@ class Discord:
         messages.reverse()
 
         for message in messages:
+            print(f"{message['author']['username']}: '{message['content']}' at {message['timestamp'][:-13]}")
             recent_messages.append(f"{message['author']['username']}':'{message['content']}':'{message['timestamp'][:-13]}:'{message['author']['id']}':{message['id']}")
 
         return recent_messages
@@ -134,7 +135,7 @@ class AI:
                   To react to a message, say REACT (message_id)&&(url encoded emoji), example: REACT 1245734765797481951&&%F0%9F%98%80.
                   To react with several emoji to a message, each reaction should be it's own REACT command, example: REACT 1245734765797481951&&%F0%9F%98%80T/I/o/C/J/1/h/x/Q/cREACT1245734765797481951&&%F9%DF%94%63
                   You should react fairly often to messages, however you should generally send a message aswell when responding.
-                  Only use gifs very RARELY. After 'T/I/o/C/J/1/h/x/Q/c' you MUST have a command, it CANNOT just be text.
+                  After 'T/I/o/C/J/1/h/x/Q/c' you MUST have a command, it CANNOT just be text.
                   The messages are in the format username:message:timestamp:user id:message id"""}]
         for message in messages:
             input.append({'role': 'user', 'content': message})
@@ -159,7 +160,7 @@ response_retry_limit = 3
 while active:
     new_messages = discord.get_messages()
     if new_messages == messages:
-        sleep(randint(1, 4))
+        sleep(randint(1, 6))
     else:
         response = ai.get_response(new_messages)
         print(response)
