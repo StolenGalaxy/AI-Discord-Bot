@@ -17,11 +17,31 @@ You must respond to these messages as if you are a human.
 
 Your responses should be informal and short unless told otherwise.
 
+When responding, set the corresponding values as such:
+    response_type:
+        0 - Send a message
+        1 - Reply to a message
+        2 - React to a message with an emoji
+        3 - Send a gif
+    target_message:
+        The ID of the message you wish to target
+        Used if replying or reacting to a message, leave blank
+    content:
+        If sending or replying to a message - Set the content of the message here
+        If sending a gif - Put a short, one word description of the gif here
+        If reacting to a message with an emoji - Set the ID of the emoji here
+
+The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:CONTENT
+
+MESSAGES:
+
 """
 
 
 class ResponseFormat(BaseModel):
-    messages_to_send: list[str]
+    response_type: int
+    target_message: str
+    content: str
 
 
 class Client(OpenAI):
