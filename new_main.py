@@ -35,7 +35,7 @@ When responding, set the corresponding values as such:
         If sending a gif - Put a short, one word description of the gif here
         If reacting to a message with an emoji - Set the ID of the emoji here
 
-The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:CONTENT
+The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:```CONTENT``` (or if the message is a sticker, it will be in the format TIMESTAMP:USERNAME:MESSAGE_ID:THIS MESSAGE IS A STICKER:STICKER DESCRIPTION)
 
 MESSAGES:
 
@@ -99,12 +99,18 @@ class Client(OpenAI):
             messages_formatted = []
 
             for message in messages:
-                message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:{message["content"]}"
+                content = str(message["content"])
+                sanitized_content = content.replace("```", "'''")
+
+                message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:```{sanitized_content}```"
                 messages_formatted.append(message_to_append)
+
+                if "sticker_items" in str(message):
+                    sticker_desc = message["sticker_items"][0]["name"]
+                    message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:THIS MESSAGE IS A STICKER:{sticker_desc}"
+                    messages_formatted.append(message_to_append)
 
             return messages_formatted
 
 
 my_client = Client()
-
-print(my_client.get_messages())
