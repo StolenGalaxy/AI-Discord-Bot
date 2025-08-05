@@ -78,10 +78,23 @@ class Client(OpenAI):
         return response
 
     def send_message(self, message):
+
         json_data = {
             'content': message
         }
+
         return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
+
+    def get_messages(self, limit: int = 50):
+
+        params = {
+            "limit": limit
+        }
+
+        response = requests.get(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, params=params)
+        return response
 
 
 my_client = Client()
+
+print(my_client.get_messages(1).json())
