@@ -31,7 +31,7 @@ When responding, set the corresponding values as such:
         3 - Send a gif
     target_message:
         The ID of the message you wish to target
-        Used if replying or reacting to a message, leave blank
+        Used if replying or reacting to a message, leave blank otherwise
     content:
         If sending or replying to a message - Set the content of the message here
         If sending a gif - Put a short, one word description of the gif here
@@ -75,7 +75,7 @@ class Client(OpenAI):
             response_format=ResponseFormat,
         )
 
-        response = json.loads(completion.choices[0].message.content)
+        response = completion.choices[0].message.content
 
         return response
 
@@ -116,6 +116,16 @@ class Client(OpenAI):
         else:
             return False
 
+    def interpret_response(self, response):
+        response = json.loads(response)
+
+        response_type = response["response_type"]
+        target_message = response["target_message"]
+        content = response["content"]
+
+        if not response_type:
+            self.send_message(content)
+
 
 if __name__ == "__main__":
     client = Client()
@@ -124,4 +134,4 @@ if __name__ == "__main__":
 
     response = client.get_response(messages)
 
-    print(response["content"])
+    client.interpret_response(response)
