@@ -5,9 +5,13 @@ from os import environ
 
 from pydantic import BaseModel
 
+import requests
+
 load_dotenv()
 
 DISCORD_AUTH = environ["DISCORD"]
+
+DISCORD_CHANNEL_ID = environ["DISCORD_CHANNEL_ID"]
 
 SYSTEM_PROMPT = """
 
@@ -36,6 +40,10 @@ The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:CON
 MESSAGES:
 
 """
+
+headers = {
+    'Authorization': DISCORD_AUTH
+}
 
 
 class ResponseFormat(BaseModel):
@@ -69,8 +77,11 @@ class Client(OpenAI):
 
         return response
 
+    def send_message(self, message):
+        json_data = {
+            'content': message
+        }
+        return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
+
 
 my_client = Client()
-
-response = my_client.get_response()
-print(response)
