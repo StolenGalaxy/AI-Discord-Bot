@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 import requests
 
+import json
+
 load_dotenv()
 
 DISCORD_AUTH = environ["DISCORD"]
@@ -56,24 +58,24 @@ class Client(OpenAI):
     def __init__(self):
         super().__init__()
 
-    def get_prompt(self):
-        prompt = SYSTEM_PROMPT
+    def get_prompt(self, messages):
+        prompt = f"{SYSTEM_PROMPT}{messages}"
 
         return prompt
 
-    def get_response(self):
+    def get_response(self, messages):
         completion = self.chat.completions.parse(
             model="gpt-4.1",
             messages=[
                 {
                     "role": "system",
-                    "content": self.get_prompt()
+                    "content": self.get_prompt(messages)
                 }
             ],
             response_format=ResponseFormat,
         )
 
-        response = completion.choices[0].message.content
+        response = json.loads(completion.choices[0].message.content)
 
         return response
 
@@ -105,12 +107,21 @@ class Client(OpenAI):
                 message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:```{sanitized_content}```"
                 messages_formatted.append(message_to_append)
 
-                if "sticker_items" in str(message):
+                if "sticker_items" in str(message) and "sticker_items" not in sanitized_content:
                     sticker_desc = message["sticker_items"][0]["name"]
                     message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:THIS MESSAGE IS A STICKER:{sticker_desc}"
                     messages_formatted.append(message_to_append)
 
             return messages_formatted
+        else:
+            return False
 
 
-my_client = Client()
+if __name__ == "__main__":
+    client = Client()
+
+    messages = client.get_messages()
+
+    response = client.get_response(messages)
+
+    print(response["content"])
