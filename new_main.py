@@ -85,16 +85,26 @@ class Client(OpenAI):
 
         return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
 
-    def get_messages(self, limit: int = 50):
+    def get_messages(self, limit: int = 15):
 
         params = {
             "limit": limit
         }
 
         response = requests.get(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, params=params)
-        return response
+
+        if response.status_code == 200:
+            messages = response.json()
+
+            messages_formatted = []
+
+            for message in messages:
+                message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:{message["content"]}"
+                messages_formatted.append(message_to_append)
+
+            return messages_formatted
 
 
 my_client = Client()
 
-print(my_client.get_messages(1).json())
+print(my_client.get_messages())
