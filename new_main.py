@@ -9,6 +9,9 @@ import requests
 
 import json
 
+from time import sleep
+from random import randint
+
 load_dotenv()
 
 DISCORD_AUTH = environ["DISCORD"]
@@ -30,14 +33,13 @@ action 1:
         1 - Reply to a message
         2 - React to a message with an emoji
         3 - Send a gif
-        (for now only 0 and 1 have been implemented so use them)
     target_message:
         The ID of the message you wish to target
         Used if replying or reacting to a message, leave blank otherwise
     content:
         If sending or replying to a message - Set the content of the message here
         If sending a gif - Put a short, one word description of the gif here
-        If reacting to a message with an emoji - Set the ID of the emoji here
+        If reacting to a message with an emoji - Put the url encoded form of the emoji here
 action 2:
     response_type:
         ... and so on; you can and SHOULD use as many actions as you wish to respond over multiple messages or send messages and gifs and reactions etc
@@ -108,6 +110,10 @@ class Client(OpenAI):
 
         return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
 
+    def react_to_message(self, emoji_code, target_id):
+
+        return requests.put(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages/{target_id}/reactions/{emoji_code}/%40me", headers=headers).text
+
     def get_messages(self, limit: int = 15):
 
         params = {
@@ -150,6 +156,10 @@ class Client(OpenAI):
                 self.send_message(content)
             if response_type == 1:
                 self.reply_to_message(content, target_message_id)
+            if response_type == 2:
+                print(self.react_to_message(content, target_message_id))
+
+            sleep(randint(1, 5))
 
 
 if __name__ == "__main__":
