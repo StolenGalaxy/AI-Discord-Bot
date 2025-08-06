@@ -21,14 +21,16 @@ You will be shown messages from a Discord group/server.
 
 You must respond to these messages as if you are a human.
 
-Your responses should be informal and short unless told otherwise.
+Your responses should be informal and short, generally lacking punctuation.
 
-When responding, set the corresponding values as such:
+When responding, use the following format:
+action 1:
     response_type:
         0 - Send a message
         1 - Reply to a message
         2 - React to a message with an emoji
         3 - Send a gif
+        (for now only 0 is implemented so use that)
     target_message:
         The ID of the message you wish to target
         Used if replying or reacting to a message, leave blank otherwise
@@ -36,7 +38,11 @@ When responding, set the corresponding values as such:
         If sending or replying to a message - Set the content of the message here
         If sending a gif - Put a short, one word description of the gif here
         If reacting to a message with an emoji - Set the ID of the emoji here
+action 2:
+    response_type:
+        ... and so on; you can and SHOULD use as many actions as you wish to respond over multiple messages or send messages and gifs and reactions etc
 
+Your username is:
 The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:```CONTENT``` (or if the message is a sticker, it will be in the format TIMESTAMP:USERNAME:MESSAGE_ID:THIS MESSAGE IS A STICKER:STICKER DESCRIPTION)
 
 MESSAGES:
@@ -48,10 +54,14 @@ headers = {
 }
 
 
-class ResponseFormat(BaseModel):
+class Action(BaseModel):
     response_type: int
     target_message: str
     content: str
+
+
+class Response(BaseModel):
+    actions: list[Action]
 
 
 class Client(OpenAI):
@@ -72,7 +82,7 @@ class Client(OpenAI):
                     "content": self.get_prompt(messages)
                 }
             ],
-            response_format=ResponseFormat,
+            response_format=Response
         )
 
         response = completion.choices[0].message.content
@@ -114,17 +124,19 @@ class Client(OpenAI):
 
             return messages_formatted
         else:
+            print(response.text)
             return False
 
     def interpret_response(self, response):
         response = json.loads(response)
+        print(response)
+        for action in response["actions"]:
+            response_type = action["response_type"]
+            target_message = action["target_message"]
+            content = action["content"]
 
-        response_type = response["response_type"]
-        target_message = response["target_message"]
-        content = response["content"]
-
-        if not response_type:
-            self.send_message(content)
+            if not response_type:
+                self.send_message(content)
 
 
 if __name__ == "__main__":
