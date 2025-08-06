@@ -30,7 +30,7 @@ action 1:
         1 - Reply to a message
         2 - React to a message with an emoji
         3 - Send a gif
-        (for now only 0 is implemented so use that)
+        (for now only 0 and 1 have been implemented so use them)
     target_message:
         The ID of the message you wish to target
         Used if replying or reacting to a message, leave blank otherwise
@@ -92,7 +92,18 @@ class Client(OpenAI):
     def send_message(self, message):
 
         json_data = {
-            'content': message
+            "content": message
+        }
+
+        return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
+
+    def reply_to_message(self, message, target_id):
+
+        json_data = {
+            "content": message,
+            "message_reference": {
+                "message_id": target_id
+            }
         }
 
         return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
@@ -132,11 +143,13 @@ class Client(OpenAI):
         print(response)
         for action in response["actions"]:
             response_type = action["response_type"]
-            target_message = action["target_message"]
+            target_message_id = action["target_message"]
             content = action["content"]
 
             if not response_type:
                 self.send_message(content)
+            if response_type == 1:
+                self.reply_to_message(content, target_message_id)
 
 
 if __name__ == "__main__":
