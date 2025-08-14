@@ -76,7 +76,6 @@ class Client(OpenAI):
         self.old_messages = self.get_messages()
 
     def get_prompt(self, messages: list):
-        messages.reverse()
         prompt = f"{SYSTEM_PROMPT}{messages}"
         prompt = prompt.format(self.get_self_info())
 
@@ -152,6 +151,7 @@ class Client(OpenAI):
                     message_to_append = f"{message["timestamp"]}:{message["author"]["username"]}:{message["id"]}:THIS MESSAGE IS A STICKER:{sticker_desc}"
                     messages_formatted.append(message_to_append)
 
+            messages_formatted.reverse()
             return messages_formatted
         else:
             print(response.text)
@@ -194,11 +194,10 @@ def run():
         messages = client.get_messages()
 
         if client.have_messages_changed(messages):
-            client.old_messages = messages
             response = client.get_response(messages)
             client.interpret_response(response)
+            client.old_messages = client.get_messages()
             sleep(1)
-
         else:
             sleep(randint(1, 5))
 
