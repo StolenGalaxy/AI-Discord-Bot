@@ -1,18 +1,18 @@
 from openai import OpenAI
+from pydantic import BaseModel
 
 from dotenv import load_dotenv
 from os import environ
 
-from pydantic import BaseModel
-
 import requests
-
 import json
 
 from time import sleep
 from random import randint, choice
-
 from math import ceil
+
+import logging
+import coloredlogs
 
 load_dotenv()
 
@@ -73,6 +73,11 @@ class Response(BaseModel):
 class Client(OpenAI):
     def __init__(self):
         super().__init__()
+        self.logger = logging.getLogger(__name__)
+        coloredlogs.install(logger=self.logger)
+
+        self.logger.info(f"Initializing user: {self.get_self_info()}")
+
         self.old_messages = self.get_messages()
 
     def get_prompt(self, messages: list):
@@ -83,6 +88,7 @@ class Client(OpenAI):
 
     def have_messages_changed(self, messages):
         if messages != self.old_messages:
+            self.logger.debug("Detected message change")
             return True
         else:
             return False
@@ -99,6 +105,7 @@ class Client(OpenAI):
             response_format=Response
         )
 
+        self.logger.debug(f"AI returned response: {completion}")
         response = completion.choices[0].message.content
 
         return response
@@ -109,7 +116,7 @@ class Client(OpenAI):
             "content": message
         }
 
-        return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
+        requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
 
     def reply_to_message(self, message, target_id):
 
@@ -120,11 +127,10 @@ class Client(OpenAI):
             }
         }
 
-        return requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
+        requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages", headers=headers, json=json_data)
 
     def react_to_message(self, emoji_code, target_id):
-
-        return requests.put(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages/{target_id}/reactions/{emoji_code}/%40me", headers=headers).text
+        requests.put(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/messages/{target_id}/reactions/{emoji_code}/%40me", headers=headers).text
 
     def get_messages(self, limit: int = 15):
 
@@ -154,7 +160,7 @@ class Client(OpenAI):
             messages_formatted.reverse()
             return messages_formatted
         else:
-            print(response.text)
+            self.logger.error(f"An error occurred when retreiving messages: {response.text}")
             return False
 
     def find_gif(self, gif_description: str) -> str:
@@ -171,21 +177,24 @@ class Client(OpenAI):
 
     def interpret_response(self, response):
         response = json.loads(response)
-        print(response)
         for action in response["actions"]:
             response_type = action["response_type"]
             target_message_id = action["target_message"]
             content = action["content"]
 
             if not response_type:
+                self.logger.info(f"Sending message: {content}")
                 self.show_typing(content)
                 self.send_message(content)
             if response_type == 1:
+                self.logger.info(f"Replying with message: {content}")
                 self.show_typing(content)
                 self.reply_to_message(content, target_message_id)
             if response_type == 2:
-                print(self.react_to_message(content, target_message_id))
+                self.logger.info(f"Reacting to message with emoji: {content}")
+                self.react_to_message(content, target_message_id)
             if response_type == 3:
+                self.logger.info(f"Sending gif of description: {content}")
                 gif_url = self.find_gif(content)
                 self.send_message(gif_url)
 
@@ -197,6 +206,8 @@ class Client(OpenAI):
 
     def show_typing(self, message):
         number_of_posts = ceil((len(message) / 4)) + randint(1, 4)
+
+        self.logger.debug(f"Posting typing request {number_of_posts} times (approximately {number_of_posts/2} seconds)")
 
         for i in range(number_of_posts):
             requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/typing", headers=headers)
@@ -212,9 +223,8 @@ def run():
             response = client.get_response(messages)
             client.interpret_response(response)
             client.old_messages = client.get_messages()
-            sleep(1)
         else:
-            sleep(randint(1, 5))
+            sleep(randint(1, 4))
 
 
 if __name__ == "__main__":
