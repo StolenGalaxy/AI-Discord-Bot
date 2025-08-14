@@ -44,7 +44,7 @@ action 2:
     response_type:
         ... and so on; you can and SHOULD use as many actions as you wish to respond over multiple messages or send messages and gifs and reactions etc
 
-Your username is:
+Your username is: {}
 The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:```CONTENT``` (or if the message is a sticker, it will be in the format TIMESTAMP:USERNAME:MESSAGE_ID:THIS MESSAGE IS A STICKER:STICKER DESCRIPTION)
 
 MESSAGES:
@@ -70,14 +70,17 @@ class Client(OpenAI):
     def __init__(self):
         super().__init__()
 
-    def get_prompt(self, messages):
+    def get_prompt(self, messages: list):
+        messages.reverse()
         prompt = f"{SYSTEM_PROMPT}{messages}"
+        prompt = prompt.format(self.get_self_info())
+        print(prompt)
 
         return prompt
 
     def get_response(self, messages):
         completion = self.chat.completions.parse(
-            model="gpt-4.1",
+            model="gpt-5",
             messages=[
                 {
                     "role": "system",
@@ -161,8 +164,12 @@ class Client(OpenAI):
 
             sleep(randint(1, 5))
 
+    def get_self_info(self):
+        username = requests.get("https://discord.com/api/v9/users/@me", headers=headers).json()["username"]
+        return username
 
-if __name__ == "__main__":
+
+def run():
     client = Client()
 
     messages = client.get_messages()
@@ -170,3 +177,7 @@ if __name__ == "__main__":
     response = client.get_response(messages)
 
     client.interpret_response(response)
+
+
+if __name__ == "__main__":
+    run()
