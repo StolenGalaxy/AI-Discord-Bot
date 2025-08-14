@@ -10,7 +10,7 @@ import requests
 import json
 
 from time import sleep
-from random import randint
+from random import randint, choice
 
 from math import ceil
 
@@ -40,7 +40,7 @@ action 1:
         Used if replying or reacting to a message, leave blank otherwise
     content:
         If sending or replying to a message - Set the content of the message here
-        If sending a gif - Put a short, one word description of the gif here
+        If sending a gif - Put a short, one or two word description of the gif here
         If reacting to a message with an emoji - Put the url encoded form of the emoji here
 action 2:
     response_type:
@@ -157,6 +157,18 @@ class Client(OpenAI):
             print(response.text)
             return False
 
+    def find_gif(self, gif_description: str) -> str:
+        params = {
+            "q": gif_description,
+            "provider": "tenor",
+            "media_format": "webm"
+        }
+
+        gifs = requests.get("https://discord.com/api/v9/gifs/search", params=params, headers=headers).json()
+
+        random_gif = choice(gifs)["url"]
+        return random_gif
+
     def interpret_response(self, response):
         response = json.loads(response)
         print(response)
@@ -173,6 +185,9 @@ class Client(OpenAI):
                 self.reply_to_message(content, target_message_id)
             if response_type == 2:
                 print(self.react_to_message(content, target_message_id))
+            if response_type == 3:
+                gif_url = self.find_gif(content)
+                self.send_message(gif_url)
 
             sleep(randint(1, 5))
 
