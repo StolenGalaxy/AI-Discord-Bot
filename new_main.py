@@ -12,6 +12,8 @@ import json
 from time import sleep
 from random import randint
 
+from math import ceil
+
 load_dotenv()
 
 DISCORD_AUTH = environ["DISCORD"]
@@ -44,6 +46,8 @@ action 2:
     response_type:
         ... and so on; you can and SHOULD use as many actions as you wish to respond over multiple messages or send messages and gifs and reactions etc
 
+If you don't want to respond at all, provide no actions.
+
 Your username is: {}
 The messages, provided below are in the format TIMESTAMP:USERNAME:MESSAGE_ID:```CONTENT``` (or if the message is a sticker, it will be in the format TIMESTAMP:USERNAME:MESSAGE_ID:THIS MESSAGE IS A STICKER:STICKER DESCRIPTION)
 
@@ -69,18 +73,24 @@ class Response(BaseModel):
 class Client(OpenAI):
     def __init__(self):
         super().__init__()
+        self.old_messages = self.get_messages()
 
     def get_prompt(self, messages: list):
         messages.reverse()
         prompt = f"{SYSTEM_PROMPT}{messages}"
         prompt = prompt.format(self.get_self_info())
-        print(prompt)
 
         return prompt
 
+    def have_messages_changed(self, messages):
+        if messages != self.old_messages:
+            return True
+        else:
+            return False
+
     def get_response(self, messages):
         completion = self.chat.completions.parse(
-            model="gpt-5",
+            model="gpt-5-mini",
             messages=[
                 {
                     "role": "system",
@@ -156,8 +166,10 @@ class Client(OpenAI):
             content = action["content"]
 
             if not response_type:
+                self.show_typing(content)
                 self.send_message(content)
             if response_type == 1:
+                self.show_typing(content)
                 self.reply_to_message(content, target_message_id)
             if response_type == 2:
                 print(self.react_to_message(content, target_message_id))
@@ -168,15 +180,27 @@ class Client(OpenAI):
         username = requests.get("https://discord.com/api/v9/users/@me", headers=headers).json()["username"]
         return username
 
+    def show_typing(self, message):
+        number_of_posts = ceil((len(message) / 4)) + randint(1, 4)
+
+        for i in range(number_of_posts):
+            requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/typing", headers=headers)
+
 
 def run():
     client = Client()
 
-    messages = client.get_messages()
+    while True:
+        messages = client.get_messages()
 
-    response = client.get_response(messages)
+        if client.have_messages_changed(messages):
+            client.old_messages = messages
+            response = client.get_response(messages)
+            client.interpret_response(response)
+            sleep(1)
 
-    client.interpret_response(response)
+        else:
+            sleep(randint(1, 5))
 
 
 if __name__ == "__main__":
