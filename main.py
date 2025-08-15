@@ -71,32 +71,52 @@ class Response(BaseModel):
 
 
 class Client(OpenAI):
-    def __init__(self):
+    def __init__(self, chat_model: int):
         super().__init__()
 
         self.logger = logging.getLogger(__name__)
         coloredlogs.install(logger=self.logger)
 
-        self.logger.info(f"Initializing user: {self.get_self_info()}")
+        self.logger.info("Initialising user.")
 
-        self.old_messages = self.get_messages()
+        try:
+            self.username = self.get_self_info()
+
+            self.old_messages = self.get_messages()
+
+            if not chat_model:
+                self.model = "gpt-5"
+            elif chat_model == 1:
+                self.model = "gpt-5-mini"
+            elif chat_model == 2:
+                self.model = "o3"
+            elif chat_model == 3:
+                self.model = "gpt-4o"
+            else:
+                self.logger.error("Model not selected correctly. Using gpt-4o.")
+                self.model = "gpt-4o"
+
+            self.logger.info(f"User {self.username} initalised successfully with model: {self.model}")
+        except Exception as err:
+            self.logger.critical(f"Failed to initalise user. Error: {err}")
 
     def get_prompt(self, messages: list):
         prompt = f"{SYSTEM_PROMPT}{messages}"
-        prompt = prompt.format(self.get_self_info())
+        prompt = prompt.format(self.username)
 
         return prompt
 
     def have_messages_changed(self, messages):
         if messages != self.old_messages:
-            self.logger.debug("Detected message change")
+            self.logger.debug("Detected message change.")
             return True
         else:
             return False
 
     def get_response(self, messages):
+        self.logger.info("Getting response from OpenAI.")
         completion = self.chat.completions.parse(
-            model="gpt-5-mini",
+            model=self.model,
             messages=[
                 {
                     "role": "system",
@@ -184,18 +204,18 @@ class Client(OpenAI):
             content = action["content"]
 
             if not response_type:
-                self.logger.info(f"Sending message: {content}")
+                self.logger.info(f"Sending message: '{content}'")
                 self.show_typing(content)
                 self.send_message(content)
             if response_type == 1:
-                self.logger.info(f"Replying with message: {content}")
+                self.logger.info(f"Replying with message: '{content}'")
                 self.show_typing(content)
                 self.reply_to_message(content, target_message_id)
             if response_type == 2:
                 self.logger.info(f"Reacting to message with emoji: {content}")
                 self.react_to_message(content, target_message_id)
             if response_type == 3:
-                self.logger.info(f"Sending gif of description: {content}")
+                self.logger.info(f"Sending gif of description: '{content}'")
                 gif_url = self.find_gif(content)
                 self.send_message(gif_url)
 
@@ -208,14 +228,24 @@ class Client(OpenAI):
     def show_typing(self, message):
         number_of_posts = ceil((len(message) / 4)) + randint(1, 4)
 
-        self.logger.debug(f"Posting typing request {number_of_posts} times (approximately {number_of_posts/2} seconds)")
+        self.logger.debug(f"Posting typing request {number_of_posts} times (approximately {number_of_posts/2} seconds).")
 
         for i in range(number_of_posts):
             requests.post(f"https://discord.com/api/v9/channels/{DISCORD_CHANNEL_ID}/typing", headers=headers)
 
 
+# Select OpenAI model to use below
+
+# 0 - GPT-5
+# 1 - GPT-5-mini
+# 2 - GPT-o3
+# 3 - GPT-4o
+
+model = 1
+
+
 def run():
-    client = Client()
+    client = Client(model)
 
     while True:
         messages = client.get_messages()
