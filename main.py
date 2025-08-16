@@ -25,7 +25,6 @@ SYSTEM_PROMPT = """
 You will be shown messages from a Discord group/server.
 
 You must respond to these messages as if you are a human.
-
 Your responses should be informal and short, generally lacking punctuation.
 
 When responding, use the following format:
